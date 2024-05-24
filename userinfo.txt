@@ -1,0 +1,5 @@
+Usertype: Customer
+Username: yijun
+Email: 3127219780@gmail.com
+Age: 12
+

@@ -21,13 +21,13 @@ private:
     bool paid;
 
 public:
-    // ¹¹Ôìº¯Êı
+    // æ„é€ å‡½æ•°
     Order(int orderid, const string& email, int year, int month, int day, const string& time,
         int dishID, double price, double cost, bool paid)
         : email(email), year(year), month(month), day(day), time(time),
         dishID(dishID), price(price), cost(cost), paid(paid), order_id(orderid) {}
 
-    // »ñÈ¡Æ÷·½·¨
+    // è·å–å™¨æ–¹æ³•
     int getID() const { return order_id; }
     string getEmail() const { return email; }
     int getYear() const { return year; }
@@ -39,7 +39,7 @@ public:
     double getCost() const { return cost; }
     bool isPaid() const { return paid; }
 
-    // ÉèÖÃÆ÷·½·¨
+    // è®¾ç½®å™¨æ–¹æ³•
     void setEmail(const string& val) { email = val; }
     void setYear(int val) { year = val; }
     void setMonth(int val) { month = val; }
@@ -50,7 +50,7 @@ public:
     void setCost(double val) { cost = val; }
     void setPaid(bool val) { paid = val; }
 
-    // ÏÔÊ¾¶©µ¥ÏêÇé
+    // æ˜¾ç¤ºè®¢å•è¯¦æƒ…
     void displayOrderDetails() const
     {
         cout << "Order Details:" << endl;
@@ -65,7 +65,7 @@ public:
         cout << endl;
     }
 
-    // ½«¶©µ¥ĞÅÏ¢Ğ´ÈëÎÄ¼ş
+    // å°†è®¢å•ä¿¡æ¯å†™å…¥æ–‡ä»¶
     void writeToFile(const string& filename) const
     {
         ofstream file(filename, ios::app);
@@ -76,7 +76,7 @@ public:
         }
 
         file << "Email: " << email << "\n";
-        file << "ID: " << order_id << ";\n";
+        file << "ID: " << order_id << "\n";
         file << "Year: " << year << "\n";
         file << "Month: " << month << "\n";
         file << "Day: " << day << "\n";
@@ -89,10 +89,10 @@ public:
         file.close();
     }
 
-    // ´ÓÎÄ¼şÖĞÉ¾³ıÖ¸¶¨IDµÄ¶©µ¥
-    void deleteOrderFromFile(const string& filename)
+    // ä»æ–‡ä»¶ä¸­åˆ é™¤æŒ‡å®šIDçš„è®¢å•
+    void deleteOrderFromFile(const string& filename) const
     {
-        vector<string> lines; // ÓÃÓÚ±£´æÎÄ¼şÄÚÈİ
+        vector<string> lines; // ç”¨äºä¿å­˜æ–‡ä»¶å†…å®¹
         ifstream file(filename);
         if (!file.is_open())
         {
@@ -105,12 +105,12 @@ public:
         {
             if (line.find("ID: " + to_string(order_id) + ";") == string::npos)
             {
-                // Èç¹ûµ±Ç°ĞĞ²»°üº¬Ö¸¶¨IDµÄ¶©µ¥ĞÅÏ¢£¬Ôò½«Æä±£´æµ½ÈİÆ÷ÖĞ
+                // å¦‚æœå½“å‰è¡Œä¸åŒ…å«æŒ‡å®šIDçš„è®¢å•ä¿¡æ¯ï¼Œåˆ™å°†å…¶ä¿å­˜åˆ°å®¹å™¨ä¸­
                 lines.push_back(line);
             }
             else
             {
-                // Èç¹ûµ±Ç°ĞĞ°üº¬Ö¸¶¨IDµÄ¶©µ¥ĞÅÏ¢£¬ÔòÌø¹ıµ±Ç°¶©µ¥µÄÍêÕûĞÅÏ¢
+                // å¦‚æœå½“å‰è¡ŒåŒ…å«æŒ‡å®šIDçš„è®¢å•ä¿¡æ¯ï¼Œåˆ™è·³è¿‡å½“å‰è®¢å•çš„å®Œæ•´ä¿¡æ¯
                 for (int i = 0; i < 8; ++i)
                 {
                     getline(file, line);
@@ -119,7 +119,7 @@ public:
         }
         file.close();
 
-        // ½«ĞŞ¸ÄºóµÄÄÚÈİĞ´»Øµ½ÎÄ¼şÖĞ
+        // å°†ä¿®æ”¹åçš„å†…å®¹å†™å›åˆ°æ–‡ä»¶ä¸­
         ofstream outfile(filename);
         if (!outfile.is_open())
         {
@@ -148,7 +148,7 @@ public:
         : name(dish_name), id(dish_id), price(dish_price), ingredients(dish_ingredients), cost(dish_cost) {}
     double getProfit() const
     {
-        return price - cost; // ÊÛ¼Û¼õÈ¥³É±¾
+        return price - cost; // å”®ä»·å‡å»æˆæœ¬
     }
 
     void getDishInfo() const
@@ -227,13 +227,13 @@ public:
 
     virtual string getPassword() const
     {
-        return ""; // Ä¬ÈÏ·µ»Ø¿Õ×Ö·û´®
+        return ""; // é»˜è®¤è¿”å›ç©ºå­—ç¬¦ä¸²
     }
 
-    // ½«ÓÃ»§ĞÅÏ¢Ğ´ÈëÎÄ¼ş
+    // å°†ç”¨æˆ·ä¿¡æ¯å†™å…¥æ–‡ä»¶
     virtual void writeToFile(ofstream& file) = 0;
 
-    // ¼ì²éÓÃ»§ĞÅÏ¢ÊÇ·ñ´æÔÚÓÚÎÄ¼şÖĞ   //ÒÑĞŞ¸Ä
+    // æ£€æŸ¥ç”¨æˆ·ä¿¡æ¯æ˜¯å¦å­˜åœ¨äºæ–‡ä»¶ä¸­   //å·²ä¿®æ”¹
     bool userInfoExists(const string& filename)
     {
         ifstream infile(filename);
@@ -250,12 +250,12 @@ public:
             if (line.find(usernameToFind) != string::npos)
             {
                 infile.close();
-                return true; // ÓÃ»§ĞÅÏ¢ÒÑ´æÔÚ
+                return true; // ç”¨æˆ·ä¿¡æ¯å·²å­˜åœ¨
             }
         }
 
         infile.close();
-        return false; // ÓÃ»§ĞÅÏ¢²»´æÔÚ
+        return false; // ç”¨æˆ·ä¿¡æ¯ä¸å­˜åœ¨
     }
     vector<Dish> readDishesFromFile(const string& filename) const
     {
@@ -311,7 +311,7 @@ public:
 class Manager : public User
 {
 private:
-    string password; // Ìí¼ÓÃÜÂëÊôĞÔ
+    string password; // æ·»åŠ å¯†ç å±æ€§
     double totalProfit = 0.0;
     double cost;
     double price;
@@ -346,29 +346,29 @@ public:
     }
     void viewAllOrders()
     {
-        // ÊµÏÖ²é¿´ËùÓĞ¶©µ¥µÄÂß¼­
+        // å®ç°æŸ¥çœ‹æ‰€æœ‰è®¢å•çš„é€»è¾‘
         cout << "Viewing all orders (placeholder function)." << endl;
     }
     void viewChefInfo()
     {
-        // ÊµÏÖ²é¿´³øÊ¦ĞÅÏ¢µÄÂß¼­
+        // å®ç°æŸ¥çœ‹å¨å¸ˆä¿¡æ¯çš„é€»è¾‘
         cout << "Viewing chef information (placeholder function)." << endl;
     }
     void viewCustomerInfo()
     {
-        // ÊµÏÖ²é¿´¹Ë¿ÍĞÅÏ¢µÄÂß¼­
+        // å®ç°æŸ¥çœ‹é¡¾å®¢ä¿¡æ¯çš„é€»è¾‘
         cout << "Viewing customer information (placeholder function)." << endl;
     }
 
     void modifyChef(int chefId)
     {
-        // ÊµÏÖĞŞ¸Ä³øÊ¦ĞÅÏ¢µÄÂß¼­
+        // å®ç°ä¿®æ”¹å¨å¸ˆä¿¡æ¯çš„é€»è¾‘
         cout << "Modifying chef with ID: " << chefId << " (placeholder function)." << endl;
     }
 
     void modifyDish(int dishId)
     {
-        // ÊµÏÖĞŞ¸Ä²ËÆ·ĞÅÏ¢µÄÂß¼­
+        // å®ç°ä¿®æ”¹èœå“ä¿¡æ¯çš„é€»è¾‘
         cout << "Modifying dish with ID: " << dishId << " (placeholder function)." << endl;
     }
     void addNewDish()
@@ -385,7 +385,7 @@ public:
         cout << "Enter Price: ";
         cin >> dish_price;
         cout << "Enter Ingredients: ";
-        cin.ignore(); // ºöÂÔÖ®Ç°µÄ»»ĞĞ·û
+        cin.ignore(); // å¿½ç•¥ä¹‹å‰çš„æ¢è¡Œç¬¦
         getline(cin, dish_ingredients);
         cout << "Enter Cost: ";
         cin >> dish_cost;
@@ -400,7 +400,7 @@ public:
             }
         }
 
-        ofstream dishFile("Dish.txt", ios::app); // ´ò¿ªÎÄ¼şÒÔ×·¼Ó·½Ê½Ğ´Èë
+        ofstream dishFile("Dish.txt", ios::app); // æ‰“å¼€æ–‡ä»¶ä»¥è¿½åŠ æ–¹å¼å†™å…¥
         if (!dishFile.is_open())
         {
             cout << "Error opening file!" << endl;
@@ -408,10 +408,10 @@ public:
         }
 
         Dish newDish(dish_name, newDishId, dish_price, dish_ingredients, dish_cost);
-        newDish.writeToFile(dishFile); // ½«²ËÆ·ĞÅÏ¢Ğ´ÈëÎÄ¼ş
+        newDish.writeToFile(dishFile); // å°†èœå“ä¿¡æ¯å†™å…¥æ–‡ä»¶
         cout << "New Dish Added Successfully!" << endl;
 
-        dishFile.close(); // ¹Ø±ÕÎÄ¼ş
+        dishFile.close(); // å…³é—­æ–‡ä»¶
     }
 
     vector<Dish> readDishesFromFile(const string& filename) const
@@ -452,7 +452,7 @@ public:
         infile.close();
         return dishes;
     }
-    // É¾³ı²ËÆ·
+    // åˆ é™¤èœå“
     void deleteDish(int dish_id)
     {
         vector<Dish> dishes = readDishesFromFile("Dish.txt");
@@ -467,7 +467,7 @@ public:
             }
             else
             {
-                dish.writeToFile(tempFile); // ½«·Ç±»É¾³ıµÄ²ËÆ·Ğ´ÈëÁÙÊ±ÎÄ¼ş
+                dish.writeToFile(tempFile); // å°†éè¢«åˆ é™¤çš„èœå“å†™å…¥ä¸´æ—¶æ–‡ä»¶
             }
         }
         tempFile.close();
@@ -475,57 +475,57 @@ public:
         if (!found)
         {
             cout << "Dish not found!" << endl;
-            remove("temp.txt"); // É¾³ıÁÙÊ±ÎÄ¼ş
+            remove("temp.txt"); // åˆ é™¤ä¸´æ—¶æ–‡ä»¶
             return;
         }
 
-        // É¾³ıÔ­ÎÄ¼ş²¢ÖØÃüÃûÁÙÊ±ÎÄ¼ş
+        // åˆ é™¤åŸæ–‡ä»¶å¹¶é‡å‘½åä¸´æ—¶æ–‡ä»¶
         remove("Dish.txt");
         rename("temp.txt", "Dish.txt");
     }
     // double calculateRevenue()
     // {
-    //     cout << "Total Profit: $" << totalProfit << endl; // ÏÔÊ¾×ÜÀûÈó
+    //     cout << "Total Profit: $" << totalProfit << endl; // æ˜¾ç¤ºæ€»åˆ©æ¶¦
     //     return totalProfit;
     // }
 
     void calculateRevenue()
     {
-        time_t currentTime = time(nullptr);      // »ñÈ¡µ±Ç°Ê±¼ä
-        tm* localTime = localtime(&currentTime); // ×ª»»Îª±¾µØÊ±¼ä
+        time_t currentTime = time(nullptr);      // è·å–å½“å‰æ—¶é—´
+        tm* localTime = localtime(&currentTime); // è½¬æ¢ä¸ºæœ¬åœ°æ—¶é—´
 
-        double totalProfit = 0.0;//³õÊ¼»¯ÀûÈóÎª0
+        double totalProfit = 0.0;//åˆå§‹åŒ–åˆ©æ¶¦ä¸º0
 
-        ifstream file("orders.txt");//´ò¿ª¶©µ¥ÎÄ¼ş
-        if (!file.is_open())//Î´´ò¿ª¼ì²â
+        ifstream file("orders.txt");//æ‰“å¼€è®¢å•æ–‡ä»¶
+        if (!file.is_open())//æœªæ‰“å¼€æ£€æµ‹
         {
             cerr << "Unable to open the file: " << endl;
             return;
         }
 
-        string line, key, value;//ÓÃÓÚ¶ÁÈ¡ÎÄ¼ş
-        string timeString;//ÓÃÓÚ¶ÁÈ¡ÎÄ¼ş
-        double price, cost;//ÓÃÓÚ¶ÁÈ¡ÎÄ¼ş
-        int year, month, day;//ÓÃÓÚ¶ÁÈ¡ÎÄ¼ş
+        string line, key, value;//ç”¨äºè¯»å–æ–‡ä»¶
+        string timeString;//ç”¨äºè¯»å–æ–‡ä»¶
+        double price, cost;//ç”¨äºè¯»å–æ–‡ä»¶
+        int year, month, day;//ç”¨äºè¯»å–æ–‡ä»¶
 
-        while (getline(file, line))//Ñ­»·¶ÁÈ¡ÎÄ¼şÖ±µ½ÎÄ¼ş½áÊø
+        while (getline(file, line))//å¾ªç¯è¯»å–æ–‡ä»¶ç›´åˆ°æ–‡ä»¶ç»“æŸ
         {
-            if (line.empty())//¿ÕĞĞÌø¹ı´¦Àí
+            if (line.empty())//ç©ºè¡Œè·³è¿‡å¤„ç†
                 continue;
 
-            size_t colonPos = line.find(':');//×Ö·û³¤¶ÈÍ£ÔÚÃ°ºÅÎ»ÖÃ
+            size_t colonPos = line.find(':');//å­—ç¬¦é•¿åº¦åœåœ¨å†’å·ä½ç½®
             if (colonPos != string::npos)
             {
-                key = line.substr(0, colonPos);//ÓÃÃ°ºÅÎ»ÖÃ·Ö¸îÊı¾İ£¬Ç°ÃæÊÇÊôĞÔ
-                value = line.substr(colonPos + 1);//ºó²¿·ÖÊÇÖµ
-                if (!value.empty() && value.front() == ' ')//ÖµÇ°ÃæÓĞ¿Õ¸ñÉ¾³ı¿Õ¸ñ
+                key = line.substr(0, colonPos);//ç”¨å†’å·ä½ç½®åˆ†å‰²æ•°æ®ï¼Œå‰é¢æ˜¯å±æ€§
+                value = line.substr(colonPos + 1);//åéƒ¨åˆ†æ˜¯å€¼
+                if (!value.empty() && value.front() == ' ')//å€¼å‰é¢æœ‰ç©ºæ ¼åˆ é™¤ç©ºæ ¼
                 {
-                    value.erase(0, 1); // ÒÆ³ıÇ°µ¼¿Õ¸ñ
+                    value.erase(0, 1); // ç§»é™¤å‰å¯¼ç©ºæ ¼
                 }
 
-                if (key == "Year")//¶ÁÈ¡Äê·İ
+                if (key == "Year")//è¯»å–å¹´ä»½
                     year = stoi(value);
-                else if (key == "Month")//ÔÂ·İ£¬ÒÔ¼°ÏÂÃæµÄ¾ßÌåµÄÊ±¼ä
+                else if (key == "Month")//æœˆä»½ï¼Œä»¥åŠä¸‹é¢çš„å…·ä½“çš„æ—¶é—´
                     month = stoi(value);
                 else if (key == "Day")
                     day = stoi(value);
@@ -538,9 +538,9 @@ public:
 
                 if (file.peek() == '\n' || file.peek() == EOF)
                 {
-                    tm orderTime = { 0 };//³õÊ¼»¯Ò»¸öÊ±¼äÀàĞÍ
-                    orderTime.tm_year = year - 1900;//¼õµ½tm¸ñÊ½·½±ã¼ÆËãÃëÊı
-                    orderTime.tm_mon = month - 1;//¼õµ½tm¸ñÊ½·½±ã¼ÆËãÃëÊı
+                    tm orderTime = { 0 };//åˆå§‹åŒ–ä¸€ä¸ªæ—¶é—´ç±»å‹
+                    orderTime.tm_year = year - 1900;//å‡åˆ°tmæ ¼å¼æ–¹ä¾¿è®¡ç®—ç§’æ•°
+                    orderTime.tm_mon = month - 1;//å‡åˆ°tmæ ¼å¼æ–¹ä¾¿è®¡ç®—ç§’æ•°
                     orderTime.tm_mday = day;
 
                     int hour, minute, second;
@@ -549,16 +549,16 @@ public:
                     orderTime.tm_min = minute;
                     orderTime.tm_sec = second;
 
-                    time_t orderTimestamp = mktime(&orderTime);//×ª»»³ÉºÏÊÊ¸ñÊ½ºó×ª³ÉÊ±¼ä´Á£¬ÓÃµ½º¯ÊıÀïÃæ¿ÉÒÔÖ±½Ó×ª»»ÃëÊı
-                    if (difftime(currentTime, orderTimestamp) < 86400) // 86400 Ãë = Ò»Ìì
+                    time_t orderTimestamp = mktime(&orderTime);//è½¬æ¢æˆåˆé€‚æ ¼å¼åè½¬æˆæ—¶é—´æˆ³ï¼Œç”¨åˆ°å‡½æ•°é‡Œé¢å¯ä»¥ç›´æ¥è½¬æ¢ç§’æ•°
+                    if (difftime(currentTime, orderTimestamp) < 86400) // 86400 ç§’ = ä¸€å¤©
                     {
-                        totalProfit += (price - cost);//·ûºÏÌõ¼şµÄ¶©µ¥£¬¸ø×ÜÀûÈó¼ÓÉÏÕâ¸öÀûÈó
+                        totalProfit += (price - cost);//ç¬¦åˆæ¡ä»¶çš„è®¢å•ï¼Œç»™æ€»åˆ©æ¶¦åŠ ä¸Šè¿™ä¸ªåˆ©æ¶¦
                     }
                 }
             }
         }
-        cout << "Profit in one day : $" << totalProfit << endl; // ÏÔÊ¾×ÜÀûÈó
-        file.close();//¹ØÎÄ¼ş
+        cout << "Profit in one day : $" << totalProfit << endl; // æ˜¾ç¤ºæ€»åˆ©æ¶¦
+        file.close();//å…³æ–‡ä»¶
     }
 
     void sellDish(int dishId, int quantitySold)
@@ -570,7 +570,7 @@ public:
             if (dish.getId() == dishId)
             {
                 double profit = dish.getProfit() * quantitySold;
-                totalProfit += profit; // ÀÛ¼ÓÀûÈó
+                totalProfit += profit; // ç´¯åŠ åˆ©æ¶¦
                 cout << "Sold " << quantitySold << " units of " << dish.getName() << ". Profit: $" << profit << endl;
                 found = true;
                 break;
@@ -587,14 +587,14 @@ void ChefprintMenu()
     cout << "\nMenu:" << endl;
     cout << "1. Edit User Info" << endl;
     cout << "2. Delete Dish" << endl;
-    cout << "3. Add New Dish" << endl; // Ìí¼ÓĞÂÑ¡Ïî
+    cout << "3. Add New Dish" << endl; // æ·»åŠ æ–°é€‰é¡¹
     cout << "4. Exit" << endl;
     cout << "Enter your choice: ";
 }
 class Chef : public User
 {
 private:
-    string password; // Ìí¼ÓÃÜÂëÊôĞÔ
+    string password; // æ·»åŠ å¯†ç å±æ€§
 
 public:
     Chef(string uname, string pwd, string mail, int user_age) : User(uname, mail, user_age), password(pwd) {}
@@ -635,7 +635,7 @@ public:
         cout << "Enter Price: ";
         cin >> dish_price;
         cout << "Enter Ingredients: ";
-        cin.ignore(); // ºöÂÔÖ®Ç°µÄ»»ĞĞ·û
+        cin.ignore(); // å¿½ç•¥ä¹‹å‰çš„æ¢è¡Œç¬¦
         getline(cin, dish_ingredients);
         cout << "Enter Cost: ";
         cin >> dish_cost;
@@ -650,7 +650,7 @@ public:
             }
         }
 
-        ofstream dishFile("Dish.txt", ios::app); // ´ò¿ªÎÄ¼şÒÔ×·¼Ó·½Ê½Ğ´Èë
+        ofstream dishFile("Dish.txt", ios::app); // æ‰“å¼€æ–‡ä»¶ä»¥è¿½åŠ æ–¹å¼å†™å…¥
         if (!dishFile.is_open())
         {
             cout << "Error opening file!" << endl;
@@ -658,10 +658,10 @@ public:
         }
 
         Dish newDish(dish_name, dish_id, dish_price, dish_ingredients, dish_cost);
-        newDish.writeToFile(dishFile); // ½«²ËÆ·ĞÅÏ¢Ğ´ÈëÎÄ¼ş
+        newDish.writeToFile(dishFile); // å°†èœå“ä¿¡æ¯å†™å…¥æ–‡ä»¶
         cout << "New Dish Added Successfully!" << endl;
 
-        dishFile.close(); // ¹Ø±ÕÎÄ¼ş
+        dishFile.close(); // å…³é—­æ–‡ä»¶
     }
 
     void deleteDish(int dish_id)
@@ -678,7 +678,7 @@ public:
             }
             else
             {
-                dish.writeToFile(tempFile); // ½«·Ç±»É¾³ıµÄ²ËÆ·Ğ´ÈëÁÙÊ±ÎÄ¼ş
+                dish.writeToFile(tempFile); // å°†éè¢«åˆ é™¤çš„èœå“å†™å…¥ä¸´æ—¶æ–‡ä»¶
             }
         }
         tempFile.close();
@@ -686,11 +686,11 @@ public:
         if (!found)
         {
             cout << "Dish not found!" << endl;
-            remove("temp.txt"); // É¾³ıÁÙÊ±ÎÄ¼ş
+            remove("temp.txt"); // åˆ é™¤ä¸´æ—¶æ–‡ä»¶
             return;
         }
 
-        // É¾³ıÔ­ÎÄ¼ş²¢ÖØÃüÃûÁÙÊ±ÎÄ¼ş
+        // åˆ é™¤åŸæ–‡ä»¶å¹¶é‡å‘½åä¸´æ—¶æ–‡ä»¶
         remove("Dish.txt");
         rename("temp.txt", "Dish.txt");
     }
@@ -701,7 +701,7 @@ void updateMaxOrderIDFile(int newMaxOrderID)
     ofstream file("MaxOrderID.txt");
     if (file.is_open())
     {
-        file << newMaxOrderID; // Ğ´ÈëĞÂµÄ×î´óOrderID
+        file << newMaxOrderID; // å†™å…¥æ–°çš„æœ€å¤§OrderID
         file.close();
     }
     else
@@ -713,10 +713,10 @@ void updateMaxOrderIDFile(int newMaxOrderID)
 int getMaxOrderID()
 {
     ifstream file("MaxOrderID.txt");
-    int maxOrderID = 0; // Ä¬ÈÏOrderID´Ó1¿ªÊ¼£¬Èç¹ûÎÄ¼ş²»´æÔÚ»òÎª¿Õ
+    int maxOrderID = 0; // é»˜è®¤OrderIDä»1å¼€å§‹ï¼Œå¦‚æœæ–‡ä»¶ä¸å­˜åœ¨æˆ–ä¸ºç©º
     if (file.is_open())
     {
-        file >> maxOrderID; // ¶ÁÈ¡×î´óOrderID
+        file >> maxOrderID; // è¯»å–æœ€å¤§OrderID
         file.close();
     }
     return maxOrderID;
@@ -726,32 +726,15 @@ class Customer : public User
 {
 private:
     vector<Order> orders;
-
-public:
-    Customer(string uname, string mail, int user_age) : User(uname, mail, user_age)
-    {
-        if (!userInfoExists(userinfo_filename))
-        {
-            ofstream ofile(userinfo_filename, ios_base::app);
-            if (!ofile)
-            {
-                cerr << "Error opening file." << endl;
-            }
-            else
-            {
-                writeToFile(ofile);
-            }
-        }
-        loadOrdersFromFile("orders.txt");
-    }
-
     void loadOrdersFromFile(const string& filename)
     {
+
+
         ifstream file(filename);
         if (!file.is_open())
         {
             cerr << "Unable to open the file: " << filename << endl;
-            return;
+            ofstream outfile(filename);
         }
 
         string line, key, value, email, time_;
@@ -808,6 +791,26 @@ public:
         }
     }
 
+public:
+    Customer(string uname, string mail, int user_age) : User(uname, mail, user_age)
+    {
+        if (!userInfoExists(userinfo_filename))
+        {
+            ofstream ofile(userinfo_filename, ios_base::app);
+            if (!ofile)
+            {
+                cerr << "Error opening file." << endl;
+            }
+            else
+            {
+                writeToFile(ofile);
+            }
+        }
+        loadOrdersFromFile("orders.txt");
+    }
+
+
+
     void getUserInfo() override
     {
         cout << "Customer Information:" << endl;
@@ -815,7 +818,7 @@ public:
     }
 
     void editUserInfo() override
-    { // ÊÇ·ñ±£Áô
+    { // æ˜¯å¦ä¿ç•™
         cout << "Editing Customer Information:" << endl;
         User::editUserInfo();
     }
@@ -831,10 +834,10 @@ public:
     void orderdish(const string& filename, int dish_ID)
     {
         vector<Dish> dishes = readDishesFromFile(filename);
-        // ±éÀú dishes ÏòÁ¿ÖĞµÄÃ¿¸ö Dish ¶ÔÏó
+        // éå† dishes å‘é‡ä¸­çš„æ¯ä¸ª Dish å¯¹è±¡
         for (const Dish& dish : dishes)
         {
-            // ¼ì²éµ±Ç° Dish ¶ÔÏóµÄ ID ÊÇ·ñÓëÄ¿±ê ID ÏàÆ¥Åä
+            // æ£€æŸ¥å½“å‰ Dish å¯¹è±¡çš„ ID æ˜¯å¦ä¸ç›®æ ‡ ID ç›¸åŒ¹é…
             if (dish.getId() == dish_ID)
             {
 
@@ -846,9 +849,17 @@ public:
                     return;
                 }
                 int currentMaxOrderID = getMaxOrderID();
-                int newOrderID = currentMaxOrderID + 1; // Éú³ÉĞÂµÄOrderID
+                int newOrderID = currentMaxOrderID + 1; // ç”Ÿæˆæ–°çš„OrderID
                 orders.push_back(Order(newOrderID, email, 1900 + nowtime->tm_year, 1 + nowtime->tm_mon, nowtime->tm_mday, to_string(nowtime->tm_hour) + ':' + to_string(nowtime->tm_min) + ':' + to_string(nowtime->tm_sec), dish_ID, dish.getPrice(), dish.getCost(), false));
-                updateMaxOrderIDFile(newOrderID); // ¸üĞÂ×î´óOrderIDÎÄ¼ş
+                updateMaxOrderIDFile(newOrderID); // æ›´æ–°æœ€å¤§OrderIDæ–‡ä»¶
+                for (const Order& order : orders)
+                {
+                    // First delete the existing order from the file
+                    order.deleteOrderFromFile("orders.txt");
+
+                    // Write the updated order back to the file
+                    order.writeToFile("orders.txt");
+                }
                 cout << "Dish ordered successfully." << endl;
                 return;
             }
@@ -863,10 +874,10 @@ public:
         {
             if (showOnlyNotPaid && order.isPaid())
             {
-                continue; // Èç¹ûÖ»ÏÔÊ¾Î´Ö§¸¶¶©µ¥£¬Ìø¹ıÒÑÖ§¸¶µÄ¶©µ¥
+                continue; // å¦‚æœåªæ˜¾ç¤ºæœªæ”¯ä»˜è®¢å•ï¼Œè·³è¿‡å·²æ”¯ä»˜çš„è®¢å•
             }
             order.displayOrderDetails();
-            cout << endl; // ÔÚ¶©µ¥Ö®¼äÌí¼Ó¿ÕĞĞÒÔÌá¸ß¿É¶ÁĞÔ
+            cout << endl; // åœ¨è®¢å•ä¹‹é—´æ·»åŠ ç©ºè¡Œä»¥æé«˜å¯è¯»æ€§
         }
     }
 
@@ -925,7 +936,7 @@ void printCustomerMenu()
     cout << "2. order" << endl;
     cout << "3. display orders not paid" << endl;
     cout << "4. display all orders" << endl;
-    cout << "5. pay" << endl; // Ìí¼ÓĞÂÑ¡Ïî
+    cout << "5. pay" << endl; // æ·»åŠ æ–°é€‰é¡¹
     cout << "6. Exit" << endl;
     cout << "Enter your choice: ";
 }
@@ -1017,7 +1028,7 @@ void customer_logging(User* user)
         break;
     }
     cout << "Enter Your Email: ";
-    while (!(cin >> customor_email) || (customor_email.find('@')))
+    while (!(cin >> customor_email) || (customor_email.find('@') == string::npos))
     {
         cin.clear(); // Clear the error flag
         cerr << "Invalid input. Please enter a right email." << endl;
@@ -1042,7 +1053,7 @@ void printChefMenu()
     cout << "\nMenu:" << endl;
     cout << "1. Edit User Info" << endl;
     cout << "2. Delete Dish" << endl;
-    cout << "3. Add New Dish" << endl; // Ìí¼ÓĞÂÑ¡Ïî
+    cout << "3. Add New Dish" << endl; // æ·»åŠ æ–°é€‰é¡¹
     cout << "4. Exit" << endl;
     cout << "Enter your choice: ";
 }
@@ -1057,23 +1068,23 @@ void ChefMenu(User* user)
         switch (menuChoice)
         {
         case 1:
-            user->editUserInfo(); // ĞŞ¸ÄÓÃ»§ĞÅÏ¢
+            user->editUserInfo(); // ä¿®æ”¹ç”¨æˆ·ä¿¡æ¯
             cout << "Updated User Info:" << endl;
-            user->getUserInfo(); // ´òÓ¡¸üĞÂºóµÄÓÃ»§ĞÅÏ¢
+            user->getUserInfo(); // æ‰“å°æ›´æ–°åçš„ç”¨æˆ·ä¿¡æ¯
             break;
         case 2:
         {
             int dishId;
             cout << "Enter Dish ID to delete: ";
             cin >> dishId;
-            dynamic_cast<Chef*>(user)->deleteDish(dishId); // É¾³ı²ËÆ·
+            dynamic_cast<Chef*>(user)->deleteDish(dishId); // åˆ é™¤èœå“
             break;
         }
         case 3:
             int newDishId;
             cout << "Enter Dish ID for the new dish: ";
             cin >> newDishId;
-            dynamic_cast<Chef*>(user)->addNewDish(newDishId); // Ìí¼Ó²ËÆ·
+            dynamic_cast<Chef*>(user)->addNewDish(newDishId); // æ·»åŠ èœå“
             break;
         case 4:
             cout << "Exiting program..." << endl;
@@ -1094,7 +1105,7 @@ void ManagerPrintMenu()
     cout << "5. Delete Dish" << endl;
     cout << "6. Add dish" << endl;
     cout << "7. Calculate Revenue" << endl;
-    cout << "8. Sell Dish" << endl; // ĞÂÔöÏúÊÛ²ËÆ·µÄÑ¡Ïî
+    cout << "8. Sell Dish" << endl; // æ–°å¢é”€å”®èœå“çš„é€‰é¡¹
     cout << "9. Exit" << endl;
     cout << "Enter your choice: ";
 }
@@ -1130,7 +1141,7 @@ void ManagerMenu(Manager* manager)
             int dishId;
             cout << "Enter Dish ID to delete: ";
             cin >> dishId;
-            manager->deleteDish(dishId); // ¼ÙÉèManagerÀàÓĞdeleteDish·½·¨
+            manager->deleteDish(dishId); // å‡è®¾Managerç±»æœ‰deleteDishæ–¹æ³•
             break;
         }
         case 6:
@@ -1141,22 +1152,22 @@ void ManagerMenu(Manager* manager)
             // int newDishId;
 
             // cout << "Enter Dish Name: ";
-            // cin.ignore(); // ºöÂÔÖ®Ç°µÄ»»ĞĞ·û
+            // cin.ignore(); // å¿½ç•¥ä¹‹å‰çš„æ¢è¡Œç¬¦
             // getline(cin, dishName);
             // cout << "Enter Price: ";
             // cin >> price;
             // cout << "Enter Ingredients: ";
-            // cin.ignore(); // ºöÂÔÖ®Ç°µÄ»»ĞĞ·û
+            // cin.ignore(); // å¿½ç•¥ä¹‹å‰çš„æ¢è¡Œç¬¦
             // getline(cin, ingredients);
             // cout << "Enter Cost: ";
             // cin >> cost;
 
-            manager->addNewDish(); // ¼ÙÉèManagerÀàÓĞaddDish·½·¨
+            manager->addNewDish(); // å‡è®¾Managerç±»æœ‰addDishæ–¹æ³•
             break;
         }
 
         case 7:
-            manager->calculateRevenue(); // µ÷ÓÃ¼ÆËãÊÕÈëµÄ¹¦ÄÜ
+            manager->calculateRevenue(); // è°ƒç”¨è®¡ç®—æ”¶å…¥çš„åŠŸèƒ½
             break;
         case 8:
         {
@@ -1168,7 +1179,7 @@ void ManagerMenu(Manager* manager)
             manager->sellDish(dishId, quantity);
             break;
         }
-        // ÆäËûcase´¦Àí±£³Ö²»±ä
+        // å…¶ä»–caseå¤„ç†ä¿æŒä¸å˜
         case 9:
             cout << "Exiting program..." << endl;
             return;
@@ -1180,7 +1191,7 @@ void ManagerMenu(Manager* manager)
 }
 bool authenticate(User* user)
 {
-    // Ö»ÓĞManagerºÍChefĞèÒªÃÜÂëÑéÖ¤
+    // åªæœ‰Managerå’ŒCheféœ€è¦å¯†ç éªŒè¯
     if (dynamic_cast<Manager*>(user) || dynamic_cast<Chef*>(user))
     {
         string correctPassword = user->getPassword();
@@ -1203,7 +1214,7 @@ bool authenticate(User* user)
         cout << "Too many incorrect attempts. Exiting..." << endl;
         return false;
     }
-    return true; // Customer²»ĞèÒªÃÜÂëÑéÖ¤
+    return true; // Customerä¸éœ€è¦å¯†ç éªŒè¯
 }
 
 void chef_logging(User* user)
@@ -1212,11 +1223,11 @@ void chef_logging(User* user)
     if (authenticate(user))
     {
         cout << "Access granted." << endl;
-        user->editUserInfo(); // ÓÃ»§ÊäÈë¸öÈËĞÅÏ¢
+        user->editUserInfo(); // ç”¨æˆ·è¾“å…¥ä¸ªäººä¿¡æ¯
         cout << "Your User Info:" << endl;
-        user->getUserInfo(); // ´òÓ¡ÓÃ»§ĞÅÏ¢
+        user->getUserInfo(); // æ‰“å°ç”¨æˆ·ä¿¡æ¯
 
-        // ¼ì²éÓÃ»§ĞÅÏ¢ÊÇ·ñÒÑ´æÔÚ
+        // æ£€æŸ¥ç”¨æˆ·ä¿¡æ¯æ˜¯å¦å·²å­˜åœ¨
         if (!user->userInfoExists("userinfo.txt"))
         {
             ofstream outFile("userinfo.txt", ios::app);
@@ -1225,7 +1236,7 @@ void chef_logging(User* user)
                 cerr << "Error opening file." << endl;
                 delete user;
             }
-            user->writeToFile(outFile); // ½«ÓÃ»§ĞÅÏ¢Ğ´ÈëÎÄ¼ş
+            user->writeToFile(outFile); // å°†ç”¨æˆ·ä¿¡æ¯å†™å…¥æ–‡ä»¶
             outFile.close();
             cout << "User Info added to file." << endl;
         }
@@ -1233,7 +1244,7 @@ void chef_logging(User* user)
         {
             cout << "User Info already exists in file." << endl;
         }
-        ChefMenu(user); // ´¦Àí²Ëµ¥
+        ChefMenu(user); // å¤„ç†èœå•
     }
     else
     {
@@ -1253,15 +1264,15 @@ void managerloger(User* user)
 
         if (Manager* manager = dynamic_cast<Manager*>(user))
         {
-            ManagerMenu(manager); // µ÷ÓÃ¾­Àí²Ëµ¥
+            ManagerMenu(manager); // è°ƒç”¨ç»ç†èœå•
         }
         else if (Chef* chef = dynamic_cast<Chef*>(user))
         {
-            ChefprintMenu(); // ¼ÙÉè´æÔÚÒ»¸ö×¨ÃÅÎª³øÊ¦¶¨ÒåµÄ²Ëµ¥
+            ChefprintMenu(); // å‡è®¾å­˜åœ¨ä¸€ä¸ªä¸“é—¨ä¸ºå¨å¸ˆå®šä¹‰çš„èœå•
         }
         else if (Customer* customer = dynamic_cast<Customer*>(user))
         {
-            // ´¦Àí¹Ë¿Í²Ëµ¥»ò²Ù×÷
+            // å¤„ç†é¡¾å®¢èœå•æˆ–æ“ä½œ
         }
     }
     else
@@ -1300,7 +1311,7 @@ int main()
         return 0;
     }
 
-    delete user; // ÊÍ·ÅÄÚ´æ
+    delete user; // é‡Šæ”¾å†…å­˜
 
     return 0;
 }
