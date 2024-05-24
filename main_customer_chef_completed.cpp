@@ -148,7 +148,7 @@ public:
         : name(dish_name), id(dish_id), price(dish_price), ingredients(dish_ingredients), cost(dish_cost) {}
     double getProfit() const
     {
-        return price - cost; // 售价减去成本
+        return price - cost; // Selling price minus cost
     }
 
     void getDishInfo() const
@@ -222,18 +222,28 @@ public:
         cout << "Enter new email: ";
         cin >> email;
         cout << "Enter new age: ";
-        cin >> age;
+        while (true) {
+            cin >> age;
+            if (!cin.fail()) {
+                break;
+            }
+            else {
+                cin.clear(); // Clear the error flag set by the previous extraction
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the invalid input
+                cout << "Please enter a valid number : ";
+            }
+        }
     }
 
     virtual string getPassword() const
     {
-        return ""; // 默认返回空字符串
+        return "";
     }
 
-    // 将用户信息写入文件
+    // Writes user information to a file
     virtual void writeToFile(ofstream& file) = 0;
 
-    // 检查用户信息是否存在于文件中   //已修改
+    // Check whether user information exists in the file
     bool userInfoExists(const string& filename)
     {
         ifstream infile(filename);
@@ -250,12 +260,12 @@ public:
             if (line.find(usernameToFind) != string::npos)
             {
                 infile.close();
-                return true; // 用户信息已存在
+                return true; // The user information already exists
             }
         }
 
         infile.close();
-        return false; // 用户信息不存在
+        return false; // The user information does not exist
     }
     vector<Dish> readDishesFromFile(const string& filename) const
     {
@@ -311,13 +321,14 @@ public:
 class Manager : public User
 {
 private:
-    string password; // 添加密码属性
+    string password;
     double totalProfit = 0.0;
     double cost;
     double price;
 
 public:
     Manager(string uname, string pwd, string mail, int user_age) : User(uname, mail, user_age), password(pwd) {}
+
 
     void getUserInfo() override
     {
@@ -335,7 +346,7 @@ public:
     {
         return password;
     }
-    void writeToFile(ofstream& userinfo_filename)
+    void writeToFile(ofstream& userinfo_filename) override
     {
         userinfo_filename << "Usertype: " << "Manager" << endl;
         userinfo_filename << "Username: " << username << endl;
@@ -346,30 +357,308 @@ public:
     }
     void viewAllOrders()
     {
-        // 实现查看所有订单的逻辑
-        cout << "Viewing all orders (placeholder function)." << endl;
-    }
-    void viewChefInfo()
-    {
-        // 实现查看厨师信息的逻辑
-        cout << "Viewing chef information (placeholder function)." << endl;
-    }
-    void viewCustomerInfo()
-    {
-        // 实现查看顾客信息的逻辑
-        cout << "Viewing customer information (placeholder function)." << endl;
+        ifstream ordersFile("orders.txt");
+        if (!ordersFile.is_open())
+        {
+            cerr << "Error opening orders file!" << endl;
+            return;
+        }
+
+        string line;
+        cout << "All Orders:" << endl;
+        while (getline(ordersFile, line))
+        {
+            cout << line << endl;
+        }
+
+        ordersFile.close();
     }
 
-    void modifyChef(int chefId)
+    void viewChefInfo()
     {
-        // 实现修改厨师信息的逻辑
-        cout << "Modifying chef with ID: " << chefId << " (placeholder function)." << endl;
+        ifstream file("userinfo.txt");
+        if (!file.is_open())
+        {
+            cerr << "Error opening users file!" << endl;
+            return;
+        }
+
+        string line;
+        bool isChef = false;
+        cout << "Chef Information:" << endl;
+        while (getline(file, line))
+        {
+            if (line.find("Usertype: Chef") != string::npos)
+            {
+                isChef = true;
+                cout << line << endl;
+            }
+            else if (line.find("Usertype: ") != string::npos)
+            {
+                isChef = false;
+            }
+            else if (isChef)
+            {
+                cout << line << endl;
+            }
+        }
+
+        file.close();
     }
+
+    void viewCustomerInfo()
+    {
+        ifstream file("userinfo.txt");
+        if (!file.is_open())
+        {
+            cerr << "Error opening users file!" << endl;
+            return;
+        }
+
+        string line;
+        bool isCustomer = false;
+        cout << "Customer Information:" << endl;
+        while (getline(file, line))
+        {
+            if (line.find("Usertype: Customer") != string::npos)
+            {
+                isCustomer = true;
+                cout << line << endl;
+            }
+            else if (line.find("Usertype: ") != string::npos)
+            {
+                isCustomer = false;
+            }
+            else if (isCustomer)
+            {
+                cout << line << endl;
+            }
+        }
+
+        file.close();
+    }
+
+    void modifyChef(string username)
+    {
+        vector<string> users;
+        ifstream file("userinfo.txt");
+        if (!file.is_open())
+        {
+            cerr << "Error opening users file!" << endl;
+            return;
+        }
+
+        string line;
+        bool isChef = false;
+        bool found = false;
+        while (getline(file, line))
+        {
+            if (line.find("Usertype: Chef") != string::npos)
+            {
+                isChef = true;
+                users.push_back(line);
+            }
+            else if (line.find("Usertype: ") != string::npos)
+            {
+                isChef = false;
+                users.push_back(line);
+            }
+            else if (isChef && line.find("Username: " + username) != string::npos)
+            {
+                found = true;
+                users.push_back(line);
+                cout << "Modifying chef with ID: " << username << endl;
+                cout << "Enter new chef information:" << endl;
+                string email1, age1;
+
+                cout << "Enter new email: ";
+                cin >> email1;
+                cout << "Enter new age: ";
+                while (true) {
+                    cin >> age1;
+                    if (!cin.fail()) {
+                        break;
+                    }
+                    else {
+                        cin.clear(); // Clear the error flag set by the previous extraction
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the invalid input
+                        cout << "Please enter a valid number : ";
+                    }
+                }
+                cin.ignore();
+
+                users.push_back("Email: " + email1);
+                users.push_back("Age: " + age1);
+
+                for (int i = 0; i < 3; ++i)
+                {
+                    getline(file, line);
+                }
+            }
+            else
+            {
+                users.push_back(line);
+            }
+        }
+        file.close();
+
+        if (found)
+        {
+            ofstream outFile("userinfo.txt");
+            for (const auto& user : users)
+            {
+                outFile << user << endl;
+            }
+            outFile.close();
+            cout << "Chef information modified successfully." << endl;
+        }
+        else
+        {
+            cout << "Chef username not found." << endl;
+        }
+    }
+
+    void modifyCustomer(string username)
+    {
+
+        vector<string> users;
+        ifstream file("userinfo.txt");
+        if (!file.is_open())
+        {
+            cerr << "Error opening users file!" << endl;
+            return;
+        }
+
+        string line;
+        bool isCustomer = false;
+        bool found = false;
+        while (getline(file, line))
+        {
+            if (line.find("Usertype: Customer") != string::npos)
+            {
+                isCustomer = true;
+                users.push_back(line);
+            }
+            else if (line.find("Usertype: ") != string::npos)
+            {
+                isCustomer = false;
+                users.push_back(line);
+            }
+            else if (isCustomer && line.find("Username: " + username) != string::npos)
+            {
+                found = true;
+                users.push_back(line);
+                cout << "Modifying chef with ID: " << username << endl;
+                cout << "Enter new chef information:" << endl;
+                string email1, age1;
+
+                cout << "Enter new email: ";
+                cin >> email1;
+                cout << "Enter new age: ";
+                while (true) {
+                    cin >> age1;
+                    if (!cin.fail()) {
+                        break;
+                    }
+                    else {
+                        cin.clear(); // Clear the error flag set by the previous extraction
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the invalid input
+                        cout << "Please enter a valid number : ";
+                    }
+                }
+                cin.ignore();
+
+                users.push_back("Email: " + email1);
+                users.push_back("Age: " + age1);
+
+                for (int i = 0; i < 3; ++i)
+                {
+                    getline(file, line);
+                }
+            }
+            else
+            {
+                users.push_back(line);
+            }
+        }
+        file.close();
+
+        if (found)
+        {
+            ofstream outFile("userinfo.txt");
+            for (const auto& user : users)
+            {
+                outFile << user << endl;
+            }
+            outFile.close();
+            cout << "Chef information modified successfully." << endl;
+        }
+        else
+        {
+            cout << "Customer ID not found." << endl;
+        }
+    }
+
 
     void modifyDish(int dishId)
     {
-        // 实现修改菜品信息的逻辑
-        cout << "Modifying dish with ID: " << dishId << " (placeholder function)." << endl;
+        vector<Dish> dishes = readDishesFromFile("Dish.txt");
+        bool found = false;
+        ofstream tempFile("temp.txt");
+
+        for (auto& dish : dishes)
+        {
+            if (dish.getId() == dishId)
+            {
+                found = true;
+                cout << "Modifying dish with ID: " << dishId << endl;
+                string newName, newIngredients;
+                double newPrice, newCost;
+
+                cout << "Enter new name: ";
+                cin >> newName;
+                cout << "Enter new price: ";
+                while (true) {
+                    cin >> newPrice;
+                    if (!cin.fail()) {
+                        break;
+                    }
+                    else {
+                        cin.clear();// Clear the error flag set by the previous extraction  
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the invalid input
+                        cout << "Incorrect input, please restart the system!" << endl; ;
+                        exit(EXIT_FAILURE); //close program
+                    }
+                }
+                cout << "Enter new ingredients: ";
+
+                cout << "Enter new ingredients: ";
+                cin.ignore();
+                getline(cin, newIngredients);
+                cout << "Enter new cost: ";
+                cin >> newCost;
+
+                Dish updatedDish(newName, dishId, newPrice, newIngredients, newCost);
+                updatedDish.writeToFile(tempFile);
+                cout << "Dish information modified successfully." << endl;
+            }
+            else
+            {
+                dish.writeToFile(tempFile);
+            }
+        }
+
+        tempFile.close();
+        if (found)
+        {
+            remove("Dish.txt");
+            rename("temp.txt", "Dish.txt");
+        }
+        else
+        {
+            cout << "Dish ID not found." << endl;
+            remove("temp.txt");
+        }
     }
     void addNewDish()
     {
@@ -379,16 +668,49 @@ public:
         int newDishId;
 
         cout << "Enter Dish ID for the new dish: ";
-        cin >> newDishId;
+        while (true) {
+            cin >> newDishId;
+            if (!cin.fail()) {
+                break;
+            }
+            else {
+                cout << "Incorrect input, please restart the system!" << endl;
+                exit(EXIT_FAILURE);
+
+            }
+        }
         cout << "Enter Dish Name: ";
         cin >> dish_name;
+
         cout << "Enter Price: ";
-        cin >> dish_price;
+
+        while (true) {
+            cin >> dish_price;
+            if (!cin.fail()) {
+                break;
+            }
+            else {
+                cout << "Incorrect input, please restart the system!" << endl;
+                exit(EXIT_FAILURE);
+            }
+        }
         cout << "Enter Ingredients: ";
-        cin.ignore(); // 忽略之前的换行符
+        cout << "Enter Ingredients: ";
+        cin.ignore(); // Ignore previous line breaks
         getline(cin, dish_ingredients);
         cout << "Enter Cost: ";
-        cin >> dish_cost;
+
+        while (true) {
+            cin >> dish_cost;
+            if (!cin.fail()) {
+                break;
+            }
+            else {
+                cout << "Incorrect input, please restart the system!" << endl;
+                exit(EXIT_FAILURE);
+
+            }
+        }
 
         vector<Dish> dishes = readDishesFromFile("Dish.txt");
         for (const auto& dish : dishes)
@@ -400,7 +722,7 @@ public:
             }
         }
 
-        ofstream dishFile("Dish.txt", ios::app); // 打开文件以追加方式写入
+        ofstream dishFile("Dish.txt", ios::app); // Opens the file for append writing
         if (!dishFile.is_open())
         {
             cout << "Error opening file!" << endl;
@@ -408,10 +730,10 @@ public:
         }
 
         Dish newDish(dish_name, newDishId, dish_price, dish_ingredients, dish_cost);
-        newDish.writeToFile(dishFile); // 将菜品信息写入文件
+        newDish.writeToFile(dishFile); // Write the menu information to the file
         cout << "New Dish Added Successfully!" << endl;
 
-        dishFile.close(); // 关闭文件
+        dishFile.close();
     }
 
     vector<Dish> readDishesFromFile(const string& filename) const
@@ -452,7 +774,7 @@ public:
         infile.close();
         return dishes;
     }
-    // 删除菜品
+
     void deleteDish(int dish_id)
     {
         vector<Dish> dishes = readDishesFromFile("Dish.txt");
@@ -467,7 +789,7 @@ public:
             }
             else
             {
-                dish.writeToFile(tempFile); // 将非被删除的菜品写入临时文件
+                dish.writeToFile(tempFile); // Writes non-deleted dishes to a temporary file
             }
         }
         tempFile.close();
@@ -475,57 +797,52 @@ public:
         if (!found)
         {
             cout << "Dish not found!" << endl;
-            remove("temp.txt"); // 删除临时文件
+            remove("temp.txt"); // Delete temporary files
             return;
         }
 
-        // 删除原文件并重命名临时文件
+        // Delete the original file and rename the temporary file
         remove("Dish.txt");
         rename("temp.txt", "Dish.txt");
     }
-    // double calculateRevenue()
-    // {
-    //     cout << "Total Profit: $" << totalProfit << endl; // 显示总利润
-    //     return totalProfit;
-    // }
 
     void calculateRevenue()
     {
-        time_t currentTime = time(nullptr);      // 获取当前时间
-        tm* localTime = localtime(&currentTime); // 转换为本地时间
+        time_t currentTime = time(nullptr);      // Get current time
+        tm* localTime = localtime(&currentTime); // Convert to local time
 
-        double totalProfit = 0.0;//初始化利润为0
+        double totalProfit = 0.0;
 
-        ifstream file("orders.txt");//打开订单文件
-        if (!file.is_open())//未打开检测
+        ifstream file("orders.txt");
+        if (!file.is_open())         // Not open detection
         {
             cerr << "Unable to open the file: " << endl;
             return;
         }
 
-        string line, key, value;//用于读取文件
-        string timeString;//用于读取文件
-        double price, cost;//用于读取文件
-        int year, month, day;//用于读取文件
+        string line, key, value; 
+        string timeString;       
+        double price, cost;      
+        int year, month, day;    
 
-        while (getline(file, line))//循环读取文件直到文件结束
+        while (getline(file, line)) // Loop reads the file until the end of the file
         {
-            if (line.empty())//空行跳过处理
+            if (line.empty())
                 continue;
 
-            size_t colonPos = line.find(':');//字符长度停在冒号位置
+            size_t colonPos = line.find(':');
             if (colonPos != string::npos)
             {
-                key = line.substr(0, colonPos);//用冒号位置分割数据，前面是属性
-                value = line.substr(colonPos + 1);//后部分是值
-                if (!value.empty() && value.front() == ' ')//值前面有空格删除空格
+                key = line.substr(0, colonPos);
+                value = line.substr(colonPos + 1);
+                if (!value.empty() && value.front() == ' ')
                 {
-                    value.erase(0, 1); // 移除前导空格
+                    value.erase(0, 1); // Remove leading Spaces
                 }
 
-                if (key == "Year")//读取年份
+                if (key == "Year")
                     year = stoi(value);
-                else if (key == "Month")//月份，以及下面的具体的时间
+                else if (key == "Month")
                     month = stoi(value);
                 else if (key == "Day")
                     day = stoi(value);
@@ -538,9 +855,9 @@ public:
 
                 if (file.peek() == '\n' || file.peek() == EOF)
                 {
-                    tm orderTime = { 0 };//初始化一个时间类型
-                    orderTime.tm_year = year - 1900;//减到tm格式方便计算秒数
-                    orderTime.tm_mon = month - 1;//减到tm格式方便计算秒数
+                    tm orderTime = { 0 }; // Initializes a time type
+                    orderTime.tm_year = year - 1900;
+                    orderTime.tm_mon = month - 1;
                     orderTime.tm_mday = day;
 
                     int hour, minute, second;
@@ -549,16 +866,16 @@ public:
                     orderTime.tm_min = minute;
                     orderTime.tm_sec = second;
 
-                    time_t orderTimestamp = mktime(&orderTime);//转换成合适格式后转成时间戳，用到函数里面可以直接转换秒数
-                    if (difftime(currentTime, orderTimestamp) < 86400) // 86400 秒 = 一天
+                    time_t orderTimestamp = mktime(&orderTime); // Convert to a timestamp after converting to a suitable format
+                    if (difftime(currentTime, orderTimestamp) < 86400)
                     {
-                        totalProfit += (price - cost);//符合条件的订单，给总利润加上这个利润
+                        totalProfit += (price - cost);
                     }
                 }
             }
         }
-        cout << "Profit in one day : $" << totalProfit << endl; // 显示总利润
-        file.close();//关文件
+        cout << "Profit in one day : $" << totalProfit << endl;
+        file.close();
     }
 
     void sellDish(int dishId, int quantitySold)
@@ -570,7 +887,7 @@ public:
             if (dish.getId() == dishId)
             {
                 double profit = dish.getProfit() * quantitySold;
-                totalProfit += profit; // 累加利润
+                totalProfit += profit; // Cumulative profit
                 cout << "Sold " << quantitySold << " units of " << dish.getName() << ". Profit: $" << profit << endl;
                 found = true;
                 break;
@@ -587,14 +904,14 @@ void ChefprintMenu()
     cout << "\nMenu:" << endl;
     cout << "1. Edit User Info" << endl;
     cout << "2. Delete Dish" << endl;
-    cout << "3. Add New Dish" << endl; // 添加新选项
+    cout << "3. Add New Dish" << endl;
     cout << "4. Exit" << endl;
     cout << "Enter your choice: ";
 }
 class Chef : public User
 {
 private:
-    string password; // 添加密码属性
+    string password;
 
 public:
     Chef(string uname, string pwd, string mail, int user_age) : User(uname, mail, user_age), password(pwd) {}
@@ -629,17 +946,36 @@ public:
         cout << "\nAdding New Dish:" << endl;
         string dish_name, dish_ingredients;
         double dish_price, dish_cost;
-
+        cout << "warning,if you put incorrect data here, the programme will be quited " << endl;
         cout << "Enter Dish Name: ";
         cin >> dish_name;
         cout << "Enter Price: ";
-        cin >> dish_price;
+
+        while (true) {
+            cin >> dish_price;
+            if (!cin.fail()) {
+                break;
+            }
+            else {
+                cout << "Incorrect input, please restart the system!" << endl;
+                exit(EXIT_FAILURE);
+            }
+        }
         cout << "Enter Ingredients: ";
-        cin.ignore(); // 忽略之前的换行符
+        cin.ignore();
         getline(cin, dish_ingredients);
         cout << "Enter Cost: ";
-        cin >> dish_cost;
 
+        while (true) {
+            cin >> dish_cost;
+            if (!cin.fail()) {
+                break;
+            }
+            else {
+                cout << "Incorrect input, please restart the system!" << endl;
+                exit(EXIT_FAILURE);
+            }
+        }
         vector<Dish> dishes = readDishesFromFile("Dish.txt");
         for (const auto& dish : dishes)
         {
@@ -650,7 +986,7 @@ public:
             }
         }
 
-        ofstream dishFile("Dish.txt", ios::app); // 打开文件以追加方式写入
+        ofstream dishFile("Dish.txt", ios::app);
         if (!dishFile.is_open())
         {
             cout << "Error opening file!" << endl;
@@ -658,10 +994,10 @@ public:
         }
 
         Dish newDish(dish_name, dish_id, dish_price, dish_ingredients, dish_cost);
-        newDish.writeToFile(dishFile); // 将菜品信息写入文件
+        newDish.writeToFile(dishFile);
         cout << "New Dish Added Successfully!" << endl;
 
-        dishFile.close(); // 关闭文件
+        dishFile.close();
     }
 
     void deleteDish(int dish_id)
@@ -678,7 +1014,7 @@ public:
             }
             else
             {
-                dish.writeToFile(tempFile); // 将非被删除的菜品写入临时文件
+                dish.writeToFile(tempFile);
             }
         }
         tempFile.close();
@@ -686,11 +1022,10 @@ public:
         if (!found)
         {
             cout << "Dish not found!" << endl;
-            remove("temp.txt"); // 删除临时文件
+            remove("temp.txt");
             return;
         }
 
-        // 删除原文件并重命名临时文件
         remove("Dish.txt");
         rename("temp.txt", "Dish.txt");
     }
@@ -701,7 +1036,7 @@ void updateMaxOrderIDFile(int newMaxOrderID)
     ofstream file("MaxOrderID.txt");
     if (file.is_open())
     {
-        file << newMaxOrderID; // 写入新的最大OrderID
+        file << newMaxOrderID; // Write the new maximum OrderID
         file.close();
     }
     else
@@ -713,10 +1048,10 @@ void updateMaxOrderIDFile(int newMaxOrderID)
 int getMaxOrderID()
 {
     ifstream file("MaxOrderID.txt");
-    int maxOrderID = 0; // 默认OrderID从1开始，如果文件不存在或为空
+    int maxOrderID = 0;
     if (file.is_open())
     {
-        file >> maxOrderID; // 读取最大OrderID
+        file >> maxOrderID;
         file.close();
     }
     return maxOrderID;
@@ -1053,7 +1388,7 @@ void printChefMenu()
     cout << "\nMenu:" << endl;
     cout << "1. Edit User Info" << endl;
     cout << "2. Delete Dish" << endl;
-    cout << "3. Add New Dish" << endl; // 添加新选项
+    cout << "3. Add New Dish" << endl;
     cout << "4. Exit" << endl;
     cout << "Enter your choice: ";
 }
@@ -1068,23 +1403,31 @@ void ChefMenu(User* user)
         switch (menuChoice)
         {
         case 1:
-            user->editUserInfo(); // 修改用户信息
+            user->editUserInfo(); // Modifying User Information
             cout << "Updated User Info:" << endl;
-            user->getUserInfo(); // 打印更新后的用户信息
+            user->getUserInfo();
             break;
         case 2:
         {
             int dishId;
             cout << "Enter Dish ID to delete: ";
-            cin >> dishId;
-            dynamic_cast<Chef*>(user)->deleteDish(dishId); // 删除菜品
+            while (true) {
+                cin >> dishId;
+                if (!cin.fail()) {
+                    break;
+                }
+                else {
+                    exit(EXIT_FAILURE);
+                }
+            }
+            dynamic_cast<Chef*>(user)->deleteDish(dishId);
             break;
         }
         case 3:
             int newDishId;
             cout << "Enter Dish ID for the new dish: ";
             cin >> newDishId;
-            dynamic_cast<Chef*>(user)->addNewDish(newDishId); // 添加菜品
+            dynamic_cast<Chef*>(user)->addNewDish(newDishId);
             break;
         case 4:
             cout << "Exiting program..." << endl;
@@ -1105,7 +1448,7 @@ void ManagerPrintMenu()
     cout << "5. Delete Dish" << endl;
     cout << "6. Add dish" << endl;
     cout << "7. Calculate Revenue" << endl;
-    cout << "8. Sell Dish" << endl; // 新增销售菜品的选项
+    cout << "8. Sell Dish" << endl;
     cout << "9. Exit" << endl;
     cout << "Enter your choice: ";
 }
@@ -1130,56 +1473,70 @@ void ManagerMenu(Manager* manager)
             break;
         case 4:
         {
-            int chefId;
-            cout << "Enter Chef ID to modify: ";
-            cin >> chefId;
-            manager->modifyChef(chefId);
+            string username;
+            cout << "Enter Chef uername to modify: ";
+            cin >> username;
+            manager->modifyChef(username);
             break;
         }
         case 5:
         {
             int dishId;
             cout << "Enter Dish ID to delete: ";
-            cin >> dishId;
-            manager->deleteDish(dishId); // 假设Manager类有deleteDish方法
+            while (true) {
+                cin >> dishId;
+                if (!cin.fail()) {
+                    break;
+                }
+                else {
+                    cin.clear(); // Clear the error flag set by the previous extraction
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the invalid input
+                    cout << "Please enter a valid number : ";
+                }
+            }
+            manager->deleteDish(dishId);
             break;
         }
         case 6:
         {
-            // cout << "Adding New Dish:" << endl;
-            // string dishName, ingredients;
-            // double price, cost;
-            // int newDishId;
-
-            // cout << "Enter Dish Name: ";
-            // cin.ignore(); // 忽略之前的换行符
-            // getline(cin, dishName);
-            // cout << "Enter Price: ";
-            // cin >> price;
-            // cout << "Enter Ingredients: ";
-            // cin.ignore(); // 忽略之前的换行符
-            // getline(cin, ingredients);
-            // cout << "Enter Cost: ";
-            // cin >> cost;
-
-            manager->addNewDish(); // 假设Manager类有addDish方法
+            manager->addNewDish();
             break;
         }
 
         case 7:
-            manager->calculateRevenue(); // 调用计算收入的功能
+            manager->calculateRevenue(); // Invoke the function to calculate revenue
             break;
         case 8:
         {
             int dishId, quantity;
             cout << "Enter Dish ID to sell: ";
-            cin >> dishId;
+            while (true) {
+                cin >> dishId;
+                if (!cin.fail()) {
+                    break;
+                }
+                else {
+                    cin.clear(); // Clear the error flag set by the previous extraction
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the invalid input
+                    cout << "Please enter a valid number : ";
+                }
+            }
             cout << "Enter quantity sold: ";
-            cin >> quantity;
+
+            while (true) {
+                cin >> quantity;
+                if (!cin.fail()) {
+                    break;
+                }
+                else {
+                    cin.clear(); // Clear the error flag set by the previous extraction
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the invalid input
+                    cout << "Please enter a valid number : ";
+                }
+            }
             manager->sellDish(dishId, quantity);
             break;
         }
-        // 其他case处理保持不变
         case 9:
             cout << "Exiting program..." << endl;
             return;
@@ -1191,7 +1548,7 @@ void ManagerMenu(Manager* manager)
 }
 bool authenticate(User* user)
 {
-    // 只有Manager和Chef需要密码验证
+    // Only Manager and Chef require password authentication
     if (dynamic_cast<Manager*>(user) || dynamic_cast<Chef*>(user))
     {
         string correctPassword = user->getPassword();
@@ -1214,7 +1571,7 @@ bool authenticate(User* user)
         cout << "Too many incorrect attempts. Exiting..." << endl;
         return false;
     }
-    return true; // Customer不需要密码验证
+    return true; // Customer does not require password authentication
 }
 
 void chef_logging(User* user)
@@ -1223,11 +1580,11 @@ void chef_logging(User* user)
     if (authenticate(user))
     {
         cout << "Access granted." << endl;
-        user->editUserInfo(); // 用户输入个人信息
+        user->editUserInfo();
         cout << "Your User Info:" << endl;
-        user->getUserInfo(); // 打印用户信息
+        user->getUserInfo();
 
-        // 检查用户信息是否已存在
+        // Check whether the user information exists
         if (!user->userInfoExists("userinfo.txt"))
         {
             ofstream outFile("userinfo.txt", ios::app);
@@ -1236,7 +1593,7 @@ void chef_logging(User* user)
                 cerr << "Error opening file." << endl;
                 delete user;
             }
-            user->writeToFile(outFile); // 将用户信息写入文件
+            user->writeToFile(outFile);
             outFile.close();
             cout << "User Info added to file." << endl;
         }
@@ -1244,13 +1601,14 @@ void chef_logging(User* user)
         {
             cout << "User Info already exists in file." << endl;
         }
-        ChefMenu(user); // 处理菜单
+        ChefMenu(user);
     }
     else
     {
         cout << "Access denied." << endl;
     }
 }
+
 
 void managerloger(User* user)
 {
@@ -1262,24 +1620,33 @@ void managerloger(User* user)
         cout << "Your User Info:" << endl;
         user->getUserInfo();
 
-        if (Manager* manager = dynamic_cast<Manager*>(user))
+        if (!user->userInfoExists("userinfo.txt"))
         {
-            ManagerMenu(manager); // 调用经理菜单
+            ofstream outFile("userinfo.txt", ios::app);
+            if (!outFile)
+            {
+                cerr << "Error opening file." << endl;
+                delete user;
+            }
+            user->writeToFile(outFile);
+            outFile.close();
+            cout << "User Info added to file." << endl;
         }
-        else if (Chef* chef = dynamic_cast<Chef*>(user))
+        else
         {
-            ChefprintMenu(); // 假设存在一个专门为厨师定义的菜单
+            cout << "User Info already exists in file." << endl;
         }
-        else if (Customer* customer = dynamic_cast<Customer*>(user))
-        {
-            // 处理顾客菜单或操作
-        }
+
+        Manager* manager = dynamic_cast<Manager*>(user);
+        ManagerMenu(manager);
+
     }
     else
     {
         cout << "Access denied." << endl;
     }
 }
+
 
 int main()
 {
@@ -1311,7 +1678,7 @@ int main()
         return 0;
     }
 
-    delete user; // 释放内存
+    delete user; // free the memory
 
     return 0;
 }
