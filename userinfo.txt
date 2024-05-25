@@ -3,20 +3,20 @@ Username: yijun
 Email: 3127219780@gmail.com
 Age: 12
 
-Usertype: Customer
-Username: asldn
-Email: 1@
-Age: 1010
-
-Usertype: Manager
-Username: shi
-Email: manager@example.com
-Age: 1
-Password: 123456
-
 Usertype: Chef
 Username: junjun
 Email: chef@example.com
 Age: 120
-Password: 
+Password: 654321
+
+Usertype: Customer
+Username: jiij
+Email: 1@
+Age: 1211
+
+Usertype: Manager
+Username: jiji
+Email: manager@example.com
+Age: 20202
+Password: 123456
 

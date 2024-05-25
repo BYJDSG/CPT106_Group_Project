@@ -825,7 +825,7 @@ public:
     }
     void editUserInfo() override
     {
-        cout << "Editing Customer Information:" << endl;
+        cout << "Editing user Information:" << endl;
  
         string input_name;
         int age = 0;
@@ -899,6 +899,9 @@ public:
         writeToFile(file);
         file.close();
     }
+
+
+
     void deleteDish(int dish_id)
     {
         vector<Dish> dishes = readDishesFromFile("Dish.txt");
@@ -1056,7 +1059,7 @@ public:
 
     void editUserInfo() override
     {
-        cout << "Editing Customer Information:" << endl;
+        cout << "Editing user Information:" << endl;
  
         string input_name;
         int age = 0;
@@ -1344,7 +1347,7 @@ public:
     // Edit user information
     void editUserInfo() override
     {
-        cout << "Editing Customer Information:" << endl;
+        cout << "Editing user Information:" << endl;
  
         string input_name;
         int age = 0;
@@ -1527,7 +1530,7 @@ void printCustomerMenu()
     cout << "3. display orders not paid" << endl;
     cout << "4. display all orders" << endl;
     cout << "5. pay" << endl; // add new choice
-    cout << "6.Edit my info" << endl;
+    cout << "6. Edit my info" << endl;
     cout << "7. Exit" << endl;
     cout << "Enter your choice: ";
 }
@@ -1571,7 +1574,7 @@ void customerMenu(User* user)
         }
         case 6:
         {
-            user->editUserInfo();
+            dynamic_cast<Customer*>(user)->editUserInfo();
             break;
         }
         case 7:
@@ -1714,7 +1717,8 @@ void ManagerPrintMenu()
     cout << "6. Add dish" << endl;
     cout << "7. Calculate Revenue" << endl;
     cout << "8. Sell Dish" << endl;
-    cout << "9. Exit" << endl;
+    cout << "9. Edit my info" << endl;
+    cout << "10. Exit" << endl;
     cout << "Enter your choice: ";
 }
 
@@ -1803,13 +1807,16 @@ void ManagerMenu(Manager* manager)
             break;
         }
         case 9:
+            manager->editUserInfo();
+            break;
+        case 10:
             cout << "Exiting program..." << endl;
             return;
         default:
             cout << "Invalid choice. Please try again." << endl;
             break;
         }
-    } while (ManagerMenuChoice != 9);
+    } while (ManagerMenuChoice != 10);
 }
 bool authenticate(User* user)
 {
