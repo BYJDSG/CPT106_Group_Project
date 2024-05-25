@@ -21,13 +21,13 @@ private:
     bool paid;
 
 public:
-    // 构造函数
+    // Constructor
     Order(int orderid, const string& email, int year, int month, int day, const string& time,
         int dishID, double price, double cost, bool paid)
         : email(email), year(year), month(month), day(day), time(time),
         dishID(dishID), price(price), cost(cost), paid(paid), order_id(orderid) {}
 
-    // 获取器方法
+    // Accessor methods
     int getID() const { return order_id; }
     string getEmail() const { return email; }
     int getYear() const { return year; }
@@ -39,7 +39,7 @@ public:
     double getCost() const { return cost; }
     bool isPaid() const { return paid; }
 
-    // 设置器方法
+    // Mutator methods
     void setEmail(const string& val) { email = val; }
     void setYear(int val) { year = val; }
     void setMonth(int val) { month = val; }
@@ -50,7 +50,7 @@ public:
     void setCost(double val) { cost = val; }
     void setPaid(bool val) { paid = val; }
 
-    // 显示订单详情
+    // Display order details
     void displayOrderDetails() const
     {
         cout << "Order Details:" << endl;
@@ -65,7 +65,7 @@ public:
         cout << endl;
     }
 
-    // 将订单信息写入文件
+    // Write order information to file
     void writeToFile(const string& filename) const
     {
         ofstream file(filename, ios::app);
@@ -89,10 +89,10 @@ public:
         file.close();
     }
 
-    // 从文件中删除指定ID的订单
+    // Delete order from file based on specified ID
     void deleteOrderFromFile(const string& filename) const
     {
-        vector<string> lines; // 用于保存文件内容
+        vector<string> lines; // Used to store file contents
         ifstream file(filename);
         if (!file.is_open())
         {
@@ -105,12 +105,12 @@ public:
         {
             if (line.find("ID: " + to_string(order_id) + ";") == string::npos)
             {
-                // 如果当前行不包含指定ID的订单信息，则将其保存到容器中
+                // If the current line does not contain information about the specified ID, save it to the container
                 lines.push_back(line);
             }
             else
             {
-                // 如果当前行包含指定ID的订单信息，则跳过当前订单的完整信息
+                // If the current line contains information about the specified ID, skip the complete information of the current order
                 for (int i = 0; i < 8; ++i)
                 {
                     getline(file, line);
@@ -119,7 +119,7 @@ public:
         }
         file.close();
 
-        // 将修改后的内容写回到文件中
+        // Write the modified content back to the file
         ofstream outfile(filename);
         if (!outfile.is_open())
         {
@@ -133,6 +133,7 @@ public:
         outfile.close();
     }
 };
+
 
 class Dish
 {
@@ -1061,10 +1062,10 @@ class Customer : public User
 {
 private:
     vector<Order> orders;
+
+    // Load orders from file
     void loadOrdersFromFile(const string& filename)
     {
-
-
         ifstream file(filename);
         if (!file.is_open())
         {
@@ -1144,19 +1145,21 @@ public:
         loadOrdersFromFile("orders.txt");
     }
 
-
-
+    // Get user information
     void getUserInfo() override
     {
         cout << "Customer Information:" << endl;
         User::getUserInfo();
     }
 
+    // Edit user information
     void editUserInfo() override
-    { // 是否保留
+    {
         cout << "Editing Customer Information:" << endl;
         User::editUserInfo();
     }
+
+    // Write user information to file
     void writeToFile(ofstream& userinfo_filename) override
     {
         userinfo_filename << "Usertype: " << "Customer" << endl;
@@ -1166,16 +1169,14 @@ public:
         userinfo_filename << endl;
     }
 
+    // Order a dish
     void orderdish(const string& filename, int dish_ID)
     {
         vector<Dish> dishes = readDishesFromFile(filename);
-        // 遍历 dishes 向量中的每个 Dish 对象
         for (const Dish& dish : dishes)
         {
-            // 检查当前 Dish 对象的 ID 是否与目标 ID 相匹配
             if (dish.getId() == dish_ID)
             {
-
                 time_t curtime = time(nullptr);
                 tm* nowtime = localtime(&curtime);
                 if (nowtime == nullptr)
@@ -1184,15 +1185,12 @@ public:
                     return;
                 }
                 int currentMaxOrderID = getMaxOrderID();
-                int newOrderID = currentMaxOrderID + 1; // 生成新的OrderID
+                int newOrderID = currentMaxOrderID + 1;
                 orders.push_back(Order(newOrderID, email, 1900 + nowtime->tm_year, 1 + nowtime->tm_mon, nowtime->tm_mday, to_string(nowtime->tm_hour) + ':' + to_string(nowtime->tm_min) + ':' + to_string(nowtime->tm_sec), dish_ID, dish.getPrice(), dish.getCost(), false));
-                updateMaxOrderIDFile(newOrderID); // 更新最大OrderID文件
+                updateMaxOrderIDFile(newOrderID);
                 for (const Order& order : orders)
                 {
-                    // First delete the existing order from the file
                     order.deleteOrderFromFile("orders.txt");
-
-                    // Write the updated order back to the file
                     order.writeToFile("orders.txt");
                 }
                 cout << "Dish ordered successfully." << endl;
@@ -1202,6 +1200,7 @@ public:
         cout << "Dish not found" << endl;
     }
 
+    // Show orders
     void showOrders(bool showOnlyNotPaid)
     {
         cout << "Displaying " << (showOnlyNotPaid ? "unpaid" : "all") << " orders:" << endl;
@@ -1209,13 +1208,14 @@ public:
         {
             if (showOnlyNotPaid && order.isPaid())
             {
-                continue; // 如果只显示未支付订单，跳过已支付的订单
+                continue; // Skip paid orders if only unpaid orders are to be displayed
             }
             order.displayOrderDetails();
-            cout << endl; // 在订单之间添加空行以提高可读性
+            cout << endl; // Add a blank line between orders for readability
         }
     }
 
+    // Process payment
     void pay()
     {
         double totalDue = 0;
@@ -1246,13 +1246,8 @@ public:
         {
             for (Order* order : unpaidOrders)
             {
-                // First delete the existing order from the file
                 order->deleteOrderFromFile("orders.txt");
-
-                // Update the order to paid
                 order->setPaid(true);
-
-                // Write the updated order back to the file
                 order->writeToFile("orders.txt");
             }
             cout << "Payment successful." << endl;
@@ -1264,6 +1259,7 @@ public:
     }
 };
 
+
 void printCustomerMenu()
 {
     cout << "\nMenu:" << endl;
@@ -1271,7 +1267,7 @@ void printCustomerMenu()
     cout << "2. order" << endl;
     cout << "3. display orders not paid" << endl;
     cout << "4. display all orders" << endl;
-    cout << "5. pay" << endl; // 添加新选项
+    cout << "5. pay" << endl; // add new choice
     cout << "6. Exit" << endl;
     cout << "Enter your choice: ";
 }
