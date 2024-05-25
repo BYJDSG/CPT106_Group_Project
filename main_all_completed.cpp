@@ -103,7 +103,7 @@ public:
         string line;
         while (getline(file, line))
         {
-            if (line.find("ID: " + to_string(order_id) + ";") == string::npos)
+            if (line.find("ID: " + to_string(order_id)) == string::npos)
             {
                 // If the current line does not contain information about the specified ID, save it to the container
                 lines.push_back(line);
@@ -195,19 +195,67 @@ public:
 class User
 {
 protected:
+    string userType;
     string username;
     string email;
-    string userinfo_filename = "userinfo.txt";
+    string password;
     int age;
 
 public:
-    User(string uname, string mail, int user_age)
+    string userinfo_filename = "userinfo.txt";
+    User(string uname, string mail, int user_age, string password = "None",string userType = "None")
     {
         username = uname;
         email = mail;
         age = user_age;
+        this->password = password;
+        this->userType = userType;
     }
     virtual ~User() {}
+    // Getter and Setter for userType
+    string getUserType() const {
+        return userType;
+    }
+
+    void setUserType(const string& userType) {
+        this->userType = userType;
+    }
+
+    // Getter and Setter for username
+    string getUsername() const {
+        return username;
+    }
+
+    void setUsername(const string& username) {
+        this->username = username;
+    }
+
+    // Getter and Setter for email
+    string getEmail() const {
+        return email;
+    }
+
+    void setEmail(const string& email) {
+        this->email = email;
+    }
+
+    // Getter and Setter for password
+    virtual string getPassword() const {
+        return password;
+    }
+
+    void setPassword(const string& password) {
+        this->password = password;
+    }
+
+    // Getter and Setter for age
+    int getAge() const {
+        return age;
+    }
+
+    void setAge(int age) {
+        this->age = age;
+    }
 
     virtual void getUserInfo()
     {
@@ -216,33 +264,14 @@ public:
         cout << "Age: " << age << endl;
     }
 
-    virtual void editUserInfo()
-    {
-        cout << "Enter new username: ";
-        cin >> username;
-        cout << "Enter new email: ";
-        cin >> email;
-        cout << "Enter new age: ";
-        while (true) {
-            cin >> age;
-            if (!cin.fail()) {
-                break;
-            }
-            else {
-                cin.clear(); // Clear the error flag set by the previous extraction
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the invalid input
-                cout << "Please enter a valid number : ";
-            }
-        }
-    }
-
-    virtual string getPassword() const
-    {
-        return "";
+    virtual void editUserInfo(){
+        cout<< "haven't been rewritten";
     }
 
     // Writes user information to a file
-    virtual void writeToFile(ofstream& file) = 0;
+    virtual void writeToFile(ofstream& file) {
+        cout<< "haven't been rewritten";
+    }
 
     // Check whether user information exists in the file
     bool userInfoExists(const string& filename)
@@ -306,6 +335,36 @@ public:
         infile.close();
         return dishes;
     }
+    vector<User> readUserData(const string& filename) {
+        vector<User> users;
+        ifstream file(filename);
+        string line;
+
+        while (getline(file, line)) {
+            if (line.find("Usertype:") != string::npos) {
+                string userType = line.substr(line.find(":") + 2);
+
+                getline(file, line);
+                string username = line.substr(line.find(":") + 2);
+
+                getline(file, line);
+                string email = line.substr(line.find(":") + 2);
+
+                getline(file, line);
+                int age = stoi(line.substr(line.find(":") + 2));
+
+                string password = "";
+                if (userType != "Customer") {
+                    getline(file, line);
+                    password = line.substr(line.find(":") + 2);
+                }
+
+                users.push_back(User(username, email, age, password, userType));
+            }
+        }
+        file.close();
+        return users;
+    }
 
     void print_dish_menu(const string& filename) const
     {
@@ -322,13 +381,12 @@ public:
 class Manager : public User
 {
 private:
-    string password;
     double totalProfit = 0.0;
     double cost;
     double price;
 
 public:
-    Manager(string uname, string pwd, string mail, int user_age) : User(uname, mail, user_age), password(pwd) {}
+    Manager(string uname, string pwd, string mail, int user_age) : User(uname, mail, user_age, pwd) {}
 
 
     void getUserInfo() override
@@ -337,16 +395,6 @@ public:
         User::getUserInfo();
     }
 
-    void editUserInfo() override
-    {
-        cout << "Editing Manager Information:" << endl;
-        User::editUserInfo();
-    }
-
-    string getPassword() const override
-    {
-        return password;
-    }
     void writeToFile(ofstream& userinfo_filename) override
     {
         userinfo_filename << "Usertype: " << "Manager" << endl;
@@ -775,7 +823,82 @@ public:
         infile.close();
         return dishes;
     }
+    void editUserInfo() override
+    {
+        cout << "Editing Customer Information:" << endl;
+ 
+        string input_name;
+        int age = 0;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard bad input
+        while (true)
+        {
+            cout << "Please enter your new name: ";
+            getline(cin, input_name);
 
+            // Check if the name is empty
+            if (input_name.empty())
+            {
+                cout << "Please enter a valid name.\n";
+                continue; // Prompt the user to enter a name again
+            }
+
+            // Check if the name contains only alphabets and spaces
+            bool valid = true;
+            for (char c : input_name)
+            {
+                if (!isalpha(c) && !isspace(c))
+                {
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (!valid)
+            {
+                cout << "Name should contain only alphabets and spaces.\n";
+                continue; // Prompt the user to enter a name again
+            }
+
+            // If the name is valid, break the loop
+            break;
+        }
+        cout << "Enter Your age: ";
+        while (!(cin >> age) || age <= 0)
+        {
+            cin.clear(); // Clear the error flag
+            cerr << "Invalid input. Please enter a right age." << endl;
+            cout << "Enter Your age: ";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard bad input
+        }
+        this->username = input_name;
+        this->age = age;
+
+
+        vector<User> users = readUserData(userinfo_filename);
+        // Write the modified content back to the file
+        ofstream file(userinfo_filename);
+        if (!file.is_open())
+        {
+            cerr << "Unable to open the file for writing." << endl;
+            return;
+        }
+        for (User user : users)
+        {
+            if (user.getEmail() != this->email)
+            {
+                file << "Usertype: " << user.getUserType()<< endl;
+                file << "Username: " << user.getUsername() << endl;
+                file << "Email: " << user.getEmail() << endl;
+                file << "Age: " << user.getAge() << endl;
+                if (!(user.getPassword()).empty()) {
+                    file << "Password: " << user.getPassword() << endl;
+                }
+                file << endl;
+            }
+        }
+        writeToFile(file);
+        file.close();
+    }
     void deleteDish(int dish_id)
     {
         vector<Dish> dishes = readDishesFromFile("Dish.txt");
@@ -911,11 +1034,9 @@ void ChefprintMenu()
 }
 class Chef : public User
 {
-private:
-    string password;
 
 public:
-    Chef(string uname, string pwd, string mail, int user_age) : User(uname, mail, user_age), password(pwd) {}
+    Chef(string uname, string pwd, string mail, int user_age) : User(uname, mail, user_age, pwd){}
 
     void getUserInfo() override
     {
@@ -923,16 +1044,6 @@ public:
         User::getUserInfo();
     }
 
-    void editUserInfo() override
-    {
-        cout << "Editing Chef Information:" << endl;
-        User::editUserInfo();
-    }
-
-    string getPassword() const override
-    {
-        return password;
-    }
     void writeToFile(ofstream& userinfo_filename)
     {
         userinfo_filename << "Usertype: " << "Chef" << endl;
@@ -942,6 +1053,84 @@ public:
         userinfo_filename << "Password: " << password << endl;
         userinfo_filename << endl;
     }
+
+    void editUserInfo() override
+    {
+        cout << "Editing Customer Information:" << endl;
+ 
+        string input_name;
+        int age = 0;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard bad input
+        while (true)
+        {
+            cout << "Please enter your new name: ";
+            getline(cin, input_name);
+
+            // Check if the name is empty
+            if (input_name.empty())
+            {
+                cout << "Please enter a valid name.\n";
+                continue; // Prompt the user to enter a name again
+            }
+
+            // Check if the name contains only alphabets and spaces
+            bool valid = true;
+            for (char c : input_name)
+            {
+                if (!isalpha(c) && !isspace(c))
+                {
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (!valid)
+            {
+                cout << "Name should contain only alphabets and spaces.\n";
+                continue; // Prompt the user to enter a name again
+            }
+
+            // If the name is valid, break the loop
+            break;
+        }
+        cout << "Enter Your age: ";
+        while (!(cin >> age) || age <= 0)
+        {
+            cin.clear(); // Clear the error flag
+            cerr << "Invalid input. Please enter a right age." << endl;
+            cout << "Enter Your age: ";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard bad input
+        }
+        this->username = input_name;
+        this->age = age;
+
+
+        vector<User> users = readUserData(userinfo_filename);
+        // Write the modified content back to the file
+        ofstream file(userinfo_filename);
+        if (!file.is_open())
+        {
+            cerr << "Unable to open the file for writing." << endl;
+            return;
+        }
+        for (User user : users)
+        {
+            if (user.getEmail() != this->email)
+            {
+                file << "Usertype: " << user.getUserType()<< endl;
+                file << "Username: " << user.getUsername() << endl;
+                file << "Email: " << user.getEmail() << endl;
+                file << "Age: " << user.getAge() << endl;
+                if (!(user.getPassword()).empty()) {
+                    file << "Password: " << user.getPassword() << endl;
+                }
+                file << endl;
+            }
+        }
+        writeToFile(file);
+        file.close();
+    }
+
     void addNewDish(int dish_id)
     {
         cout << "\nAdding New Dish:" << endl;
@@ -1156,9 +1345,79 @@ public:
     void editUserInfo() override
     {
         cout << "Editing Customer Information:" << endl;
-        User::editUserInfo();
-    }
+ 
+        string input_name;
+        int age = 0;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard bad input
+        while (true)
+        {
+            cout << "Please enter your new name: ";
+            getline(cin, input_name);
 
+            // Check if the name is empty
+            if (input_name.empty())
+            {
+                cout << "Please enter a valid name.\n";
+                continue; // Prompt the user to enter a name again
+            }
+
+            // Check if the name contains only alphabets and spaces
+            bool valid = true;
+            for (char c : input_name)
+            {
+                if (!isalpha(c) && !isspace(c))
+                {
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (!valid)
+            {
+                cout << "Name should contain only alphabets and spaces.\n";
+                continue; // Prompt the user to enter a name again
+            }
+
+            // If the name is valid, break the loop
+            break;
+        }
+        cout << "Enter Your age: ";
+        while (!(cin >> age) || age <= 0)
+        {
+            cin.clear(); // Clear the error flag
+            cerr << "Invalid input. Please enter a right age." << endl;
+            cout << "Enter Your age: ";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard bad input
+        }
+        this->username = input_name;
+        this->age = age;
+
+
+        vector<User> users = readUserData(userinfo_filename);
+        // Write the modified content back to the file
+        ofstream file(userinfo_filename);
+        if (!file.is_open())
+        {
+            cerr << "Unable to open the file for writing." << endl;
+            return;
+        }
+        for (User user : users)
+        {
+            if (user.getEmail() != this->email)
+            {
+                file << "Usertype: " << user.getUserType()<< endl;
+                file << "Username: " << user.getUsername() << endl;
+                file << "Email: " << user.getEmail() << endl;
+                file << "Age: " << user.getAge() << endl;
+                if (!(user.getPassword()).empty()) {
+                    file << "Password: " << user.getPassword() << endl;
+                }
+                file << endl;
+            }
+        }
+        writeToFile(file);
+        file.close();
+    }
     // Write user information to file
     void writeToFile(ofstream& userinfo_filename) override
     {
@@ -1268,7 +1527,8 @@ void printCustomerMenu()
     cout << "3. display orders not paid" << endl;
     cout << "4. display all orders" << endl;
     cout << "5. pay" << endl; // add new choice
-    cout << "6. Exit" << endl;
+    cout << "6.Edit my info" << endl;
+    cout << "7. Exit" << endl;
     cout << "Enter your choice: ";
 }
 
@@ -1310,6 +1570,11 @@ void customerMenu(User* user)
             break;
         }
         case 6:
+        {
+            user->editUserInfo();
+            break;
+        }
+        case 7:
         {
             cout << "Exiting Customer UI..." << endl;
             break;
@@ -1385,7 +1650,8 @@ void printChefMenu()
     cout << "1. Edit User Info" << endl;
     cout << "2. Delete Dish" << endl;
     cout << "3. Add New Dish" << endl;
-    cout << "4. Exit" << endl;
+    cout << "4. Edit my info" << endl;
+    cout << "5. Exit" << endl;
     cout << "Enter your choice: ";
 }
 
@@ -1426,6 +1692,9 @@ void ChefMenu(User* user)
             dynamic_cast<Chef*>(user)->addNewDish(newDishId);
             break;
         case 4:
+            user->editUserInfo();
+            break;
+        case 5:
             cout << "Exiting program..." << endl;
             break;
         default:
@@ -1651,6 +1920,7 @@ int main()
     cout << "1. Manager" << endl;
     cout << "2. Chef" << endl;
     cout << "3. Customer" << endl;
+
     cout << "Enter your choice: ";
     cin >> choice;
 

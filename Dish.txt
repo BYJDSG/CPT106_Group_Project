@@ -1,0 +1,6 @@
+Dish Name: fruit
+Dish ID: 1
+Price: 10
+Ingredients: fruit
+Cost: 4
+
