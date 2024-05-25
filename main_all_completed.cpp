@@ -1585,7 +1585,7 @@ void customerMenu(User* user)
         default:
             cout << "Invalid choice. Please try again." << endl;
         }
-    } while (menuChoice != 6);
+    } while (menuChoice != 7);
 }
 
 void customer_logging(User* user)
@@ -1703,7 +1703,7 @@ void ChefMenu(User* user)
         default:
             cout << "Invalid choice. Please try again." << endl;
         }
-    } while (menuChoice != 4);
+    } while (menuChoice != 5);
 }
 
 void ManagerPrintMenu()
